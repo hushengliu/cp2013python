@@ -41,39 +41,5 @@ class MyClass(object):
         str = ",".join(sql)
         str = "update " + table + " set " + str + " where " + judge + "='" + value+"'"
         print str
-        self.cur.execute(str)
-        if self.cur.rowcount > 0:
-            self.conn.commit()
-            self.close()
-            return True
-        else:
-            self.close()
-            return False
-#   执行数据库查询操作,data是sql语句中where后面的条件判断语句，返回的l是一个二维list
-    def get(self, table, data):
-        sql = "select *from " + table + " " + data
-        self.cur.execute(sql)
-        info = self.cur.fetchall()
-        l = []
-        for i in info:
-            t = []
-            for j in i:
-                if isinstance(j, (int, float)) :
-                    t.append(str(j))
-                else:
-                    t.append(j)
-            l.append(t)
-        self.close()
-        return l
-#   执行数据库删除操作,data是sql语句中where后面的条件判断语句
-    def delete(self, table, data):
-        sql = "delete from " + table + " " + data
-        self.cur.execute(sql)
-        if self.cur.rowcount > 0:
-            self.conn.commit()
-            self.close()
-            return True
-        else:
-            self.close()
-            return False
+
         
