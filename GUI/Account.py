@@ -1,4 +1,6 @@
 import collections
+
+
 class MyClass(object):
     def __init__(self, e_id,e_account):
         self.e_id=e_id

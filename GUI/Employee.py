@@ -1,5 +1,7 @@
 #encoding:utf-8
 import collections
+
+
 class Myclass(object):
     def __init__(self, employee_id, name, address, payment, union_id, work_mode, union_rate, no_salary, salary_rate):
         self.employee_id = employee_id

@@ -1,12 +1,12 @@
 import wx
 import time
 import Employee
-import EmployeeDao
+import EmployeeDaoImpl
 import Account
-import AccountDao
+import AccountDaoImpl
 import Workload
-import WorkLoadDao
-import Service
+import WorkLoadDaoImpl
+import EmployeeServiceImpl
 import wx.grid
 import Record
 from Tix import Grid
@@ -152,7 +152,7 @@ class New_Employee(wx.Panel):
         if self.ju_eid=="":
             pass;
         else:
-            if Service.MyClass().judgeE_id(self.ee_id.GetValue()):
+            if EmployeeServiceImpl.MyClass().judgeE_id(self.ee_id.GetValue()):
                 New_Employee.msg_eid=wx.StaticText(self, -1,"E_ID is exist", size=wx.Size(150,60),pos=(450,250))
     def judgeU_ID(self,event):
         New_Employee.msg_uid=wx.StaticText(self, -1,"",size=wx.Size(150,60),pos=(450,300))
@@ -160,7 +160,7 @@ class New_Employee(wx.Panel):
         if self.ju_uid=="":
             pass;
         else:
-            if Service.MyClass().judgeU_id(self.uu_id.GetValue()):
+            if EmployeeServiceImpl.MyClass().judgeU_id(self.uu_id.GetValue()):
                 New_Employee.msg_uid=wx.StaticText(self, -1,"U_ID is exist",size=wx.Size(150,60),pos=(450,300))   
     def ok(self,event):
         New_Employee.name=self.e_name.GetValue()
@@ -179,13 +179,13 @@ class New_Employee(wx.Panel):
         if self.value=="Salary":
             self.em=Employee.Myclass(self.ee_id.GetValue(),self.e_name.GetValue(),self.e_address.GetValue(),
                                   New_Employee.payment,New_Employee.u_id,self.value,"0","2000","0")
-        self.emdao=EmployeeDao.MyClass()
+        self.emdao=EmployeeDaoImpl.MyClass()
         self.emdao.addEmpl(self.em)
         if self.e_account.Name=="e_account":
             self.acc=Account.MyClass(self.ee_id.GetValue(),self.e_account.GetValue())
         else:
             self.acc=Account.MyClass(self.ee_id.GetValue(),"")
-        self.accdao=AccountDao.MyClass()
+        self.accdao=AccountDaoImpl.MyClass()
         self.accdao.addAcc(self.acc)
         self.Destroy()
         New_Employee_Detail(frame)
@@ -304,7 +304,7 @@ class PostSalePanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.back, self.backbtn)
         self.backbtn.SetDefault() 
         
-        self.wldao=WorkLoadDao.MyClass()
+        self.wldao=WorkLoadDaoImpl.MyClass()
         self.wls=self.wldao.getByType("Amount")
         self.grid = wx.grid.Grid(self,pos=(200,80))
         self.grid.CreateGrid(30,3)
@@ -326,7 +326,7 @@ class PostSalePanel(wx.Panel):
         if self.ju_eid=="":
             pass;
         else:
-            if Service.MyClass().judgeE_id(self.E_ID.GetValue())==False:
+            if EmployeeServiceImpl.MyClass().judgeE_id(self.E_ID.GetValue())==False:
                 New_Employee.msg_eid=wx.StaticText(self, -1,"E_ID is error", size=wx.Size(150,60),pos=(20,20))         
     def ok(self,event):
         if self.E_ID.GetValue()=="" or self.Date.GetValue()=="" or self.Amount.GetValue()=="" or New_Employee.msg_eid.GetLabel()=="E_ID is error":
@@ -336,7 +336,7 @@ class PostSalePanel(wx.Panel):
             New_Employee.msg_eid=wx.StaticText(self, -1,"", size=wx.Size(150,60),pos=(20,20))
         else: 
             self.wl=Workload.Workload(self.E_ID.GetValue(),self.Date.GetValue(),self.Amount.GetValue(),None)
-            Service.MyClass().addAmount(self.wl)
+            EmployeeServiceImpl.MyClass().addAmount(self.wl)
             self.Destroy()
             PostSalePanel(frame)
             frame.Refresh()
@@ -383,7 +383,7 @@ class TimeCardPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.back, self.backbtn)
         self.backbtn.SetDefault() 
         
-        self.wldao=WorkLoadDao.MyClass()
+        self.wldao=WorkLoadDaoImpl.MyClass()
         self.wls=self.wldao.getByType("Hours")
         self.grid = wx.grid.Grid(self,pos=(200,80))
         self.grid.CreateGrid(30,4)
@@ -394,7 +394,7 @@ class TimeCardPanel(wx.Panel):
         self.grid.SetColLabelValue(3, "Hours")
         self.grid.SetSize(wx.Size(340,300))      
         for row in range(self.wls.__len__()):
-            self.ser=Service.MyClass().getEmplById(str(self.wls[row][0]))
+            self.ser=EmployeeServiceImpl.MyClass().getEmplById(str(self.wls[row][0]))
             self.grid.SetCellValue(row, 0,self.wls[row][0])
             self.grid.SetCellValue(row, 1,self.ser[0][1])
             self.grid.SetCellValue(row, 2,str(self.wls[row][1])) 
@@ -407,7 +407,7 @@ class TimeCardPanel(wx.Panel):
         if self.ju_eid=="":
             pass;
         else:
-            if Service.MyClass().judgeE_id(self.E_ID.GetValue())==False:
+            if EmployeeServiceImpl.MyClass().judgeE_id(self.E_ID.GetValue())==False:
                 New_Employee.msg_eid=wx.StaticText(self, -1,"E_ID is error", size=wx.Size(150,60),pos=(20,20))         
     def ok(self,event):
         if self.E_ID.GetValue()=="" or self.Date.GetValue()=="" or self.Hours.GetValue()=="" or New_Employee.msg_eid.GetLabel()=="E_ID is error":
@@ -417,7 +417,7 @@ class TimeCardPanel(wx.Panel):
             New_Employee.msg_eid=wx.StaticText(self, -1,"", size=wx.Size(150,60),pos=(20,20))
         else:
             self.wl=Workload.Workload(self.E_ID.GetValue(),self.Date.GetValue(),None,self.Hours.GetValue())
-            Service.MyClass().addHours(self.wl)
+            EmployeeServiceImpl.MyClass().addHours(self.wl)
             self.Destroy()
             TimeCardPanel(frame)
             frame.Refresh()
@@ -462,7 +462,7 @@ class PayRollDetailPanel(wx.Panel):
         PayRollDetailPanel.grid.SetColLabelValue(1, "E_ID")
         PayRollDetailPanel.grid.SetColLabelValue(2, "Amount")
         PayRollDetailPanel.grid.SetSize(wx.Size(260,300))
-        self.ems=Service.MyClass().getAllEmpl()
+        self.ems=EmployeeServiceImpl.MyClass().getAllEmpl()
         for row in range(self.ems.__len__()):
             PayRollDetailPanel.grid.SetCellValue(row, 0,self.ems[row][1]) 
             PayRollDetailPanel.grid.SetCellValue(row, 1,self.ems[row][0]) 
@@ -471,57 +471,38 @@ class PayRollDetailPanel(wx.Panel):
             for col in range(3):
                 PayRollDetailPanel.grid.SetReadOnly(row,col,True)
             
-        self.backbtn = wx.Button(self, -1, "back", pos=(400, 400))
+        self.backbtn = wx.Button(self, -1, "back", pos=(350, 400))
         self.backbtn.SetSize(wx.Size(70,30))
         self.Bind(wx.EVT_BUTTON, self.back, self.backbtn)
         self.backbtn.SetDefault()
         
-        self.loadbtn = wx.Button(self, -1, "load", pos=(480, 400))
+        self.loadbtn = wx.Button(self, -1, "load", pos=(430, 400))
         self.loadbtn.SetSize(wx.Size(70,30))
         self.Bind(wx.EVT_BUTTON, self.load, self.loadbtn)
         self.loadbtn.SetDefault()
         
-        self.savebtn = wx.Button(self, -1, "save", pos=(560, 400))
+        self.savebtn = wx.Button(self, -1, "Run", pos=(510, 400))
         self.savebtn.SetSize(wx.Size(70,30))
         self.Bind(wx.EVT_BUTTON, self.save, self.savebtn)
         self.savebtn.SetDefault()
         
+        self.resetbtn = wx.Button(self, -1, "Reset", pos=(590, 400))
+        self.resetbtn.SetSize(wx.Size(70,30))
+        self.Bind(wx.EVT_BUTTON, self.reset, self.resetbtn)
+        self.resetbtn.SetDefault()
+        
+    def reset(self,event):
+        PayRollDetailPanel.number=0
+        PayRollDetailPanel.weeknum=0
+        PayRollDetailPanel.monthnum=0
+        wx.StaticText(self, -1,str(PayRollDetailPanel.number), size=wx.Size(50,40),pos=(580,70))
+        wx.StaticText(self, -1,str(PayRollDetailPanel.weeknum), size=wx.Size(50,40),pos=(550,30))
+        wx.StaticText(self, -1,str(PayRollDetailPanel.monthnum), size=wx.Size(50,40),pos=(650,30))
     def back(self,event):
         self.Destroy()
         MainPanel(frame)
         frame.Refresh() 
     def load(self,event):
-#         if PayRollDetailPanel.number%5==0 and PayRollDetailPanel.number%10!=0:
-#             self.service=Service.MyClass().deleteByType("hours") 
-#             Service.MyClass().clearSalary("Hourly") 
-#             PayRollDetailPanel.grid.ClearGrid()
-#             self.emshour=Service.MyClass().getEmplByWork("Hourly")
-#             for row in range(self.emshour.__len__()):
-#                 PayRollDetailPanel.grid.SetCellValue(row, 0,self.ems[row][1]) 
-#                 PayRollDetailPanel.grid.SetCellValue(row, 1,self.ems[row][0]) 
-#                 self.hsalary=float(self.emshour[row][7])*(1-float(self.emshour[row][6]))
-#                 PayRollDetailPanel.grid.SetCellValue(row, 2,str(self.hsalary))
-#             
-#         if  PayRollDetailPanel.number==12 or PayRollDetailPanel.number==26:
-#             self.service=Service.MyClass().deleteByType("amount")
-#             Service.MyClass().clearSalary("Commission") 
-#             PayRollDetailPanel.grid.ClearGrid()
-#             self.emshour=Service.MyClass().getEmplByWork("Commission")
-#             for row in range(self.emshour.__len__()):
-#                 PayRollDetailPanel.grid.SetCellValue(row, 0,self.ems[row][1]) 
-#                 PayRollDetailPanel.grid.SetCellValue(row, 1,self.ems[row][0]) 
-#                 self.hsalary=float(self.emshour[row][7])*(1-float(self.emshour[row][6]))
-#                 PayRollDetailPanel.grid.SetCellValue(row, 2,str(self.hsalary))
-#             
-#         if  PayRollDetailPanel.number==30:
-#             Service.MyClass().clearSalary("Salary")
-#             PayRollDetailPanel.grid.ClearGrid()
-#             self.emshour=Service.MyClass().getEmplByWork("Salary")
-#             for row in range(self.emshour.__len__()):
-#                 PayRollDetailPanel.grid.SetCellValue(row, 0,self.ems[row][1]) 
-#                 PayRollDetailPanel.grid.SetCellValue(row, 1,self.ems[row][0]) 
-#                 self.hsalary=float(self.emshour[row][7])*(1-float(self.emshour[row][6]))
-#                 PayRollDetailPanel.grid.SetCellValue(row, 2,str(self.hsalary))
         self.Destroy()
         ReecordPanel(frame)
         frame.Refresh()
@@ -533,7 +514,7 @@ class PayRollDetailPanel(wx.Panel):
             PayRollDetailPanel.weeknum=PayRollDetailPanel.weeknum+1
             PayRollDetailPanel.week=wx.StaticText(self, -1,str(PayRollDetailPanel.weeknum), size=wx.Size(50,40),pos=(550,30))
             PayRollDetailPanel.week.SetForegroundColour("red")
-            self.emshour=Service.MyClass().getEmplByWork("Hourly")
+            self.emshour=EmployeeServiceImpl.MyClass().getEmplByWork("Hourly")
             PayRollDetailPanel.grid.ClearGrid()
             for row in range(self.emshour.__len__()):
                 PayRollDetailPanel.grid.SetCellValue(row, 0,self.ems[row][1]) 
@@ -548,13 +529,13 @@ class PayRollDetailPanel(wx.Panel):
                 self.addRecord()
                 for row in range(self.emshour.__len__()):
                     PayRollDetailPanel.grid.SetCellValue(row, 2,"0.0")
-                Service.MyClass().clearSalary("Hourly")
-                Service.MyClass().deleteByType("hours")
+                EmployeeServiceImpl.MyClass().clearSalary("Hourly")
+                EmployeeServiceImpl.MyClass().deleteByType("hours")
         if  PayRollDetailPanel.number%10==0 and PayRollDetailPanel.number!=30:
             PayRollDetailPanel.weeknum=PayRollDetailPanel.weeknum+1
             PayRollDetailPanel.week=wx.StaticText(self, -1,str(PayRollDetailPanel.weeknum), size=wx.Size(50,40),pos=(550,30))
             PayRollDetailPanel.week.SetForegroundColour("red")
-            self.emshour=Service.MyClass().getCommHourEmpl("Hourly", "Commission")
+            self.emshour=EmployeeServiceImpl.MyClass().getCommHourEmpl("Hourly", "Commission")
             PayRollDetailPanel.grid.ClearGrid()
             for row in range(self.emshour.__len__()):
                 PayRollDetailPanel.grid.SetCellValue(row, 0,self.ems[row][1]) 
@@ -569,15 +550,15 @@ class PayRollDetailPanel(wx.Panel):
                 self.addRecord()
                 for row in range(self.emshour.__len__()):
                     PayRollDetailPanel.grid.SetCellValue(row, 2,"0.0")
-                Service.MyClass().clearSalary("Hourly")
-                Service.MyClass().deleteByType("hours")
-                Service.MyClass().clearSalary("Commission")
-                Service.MyClass().deleteByType("amount")  
+                EmployeeServiceImpl.MyClass().clearSalary("Hourly")
+                EmployeeServiceImpl.MyClass().deleteByType("hours")
+                EmployeeServiceImpl.MyClass().clearSalary("Commission")
+                EmployeeServiceImpl.MyClass().deleteByType("amount")  
         if  PayRollDetailPanel.number==30:
             PayRollDetailPanel.monthnum=PayRollDetailPanel.monthnum+1
             PayRollDetailPanel.month=wx.StaticText(self, -1,str(PayRollDetailPanel.monthnum), size=wx.Size(50,40),pos=(650,30))
             PayRollDetailPanel.month.SetForegroundColour("red")
-            self.emshour=Service.MyClass().getAllEmpl()
+            self.emshour=EmployeeServiceImpl.MyClass().getAllEmpl()
             PayRollDetailPanel.grid.ClearGrid()
             for row in range(self.emshour.__len__()):
                 PayRollDetailPanel.grid.SetCellValue(row, 0,self.ems[row][1]) 
@@ -592,7 +573,7 @@ class PayRollDetailPanel(wx.Panel):
                 self.addRecord()
                 for row in range(self.emshour.__len__()):
                     PayRollDetailPanel.grid.SetCellValue(row, 2,"0.0")
-                Service.MyClass().clearSalary("Salary")
+                EmployeeServiceImpl.MyClass().clearSalary("Salary")
             PayRollDetailPanel.number=0
     def addRecord(self):
         self.n=0
@@ -607,7 +588,7 @@ class PayRollDetailPanel(wx.Panel):
             self.r_amount=PayRollDetailPanel.grid.GetCellValue(row,2)
             self.rtime=time.strftime('%Y-%m-%d',time.localtime(time.time()))
             self.re=Record.MyClass(self.r_name,self.r_eid,self.r_amount,self.rtime)
-            Service.MyClass().addRecord(self.re)
+            EmployeeServiceImpl.MyClass().addRecord(self.re)
             
             
             
@@ -626,6 +607,11 @@ class ReecordPanel(wx.Panel):
         font = wx.Font(13,wx.SWISS, wx.NORMAL, wx.BOLD)
         self.datelb.SetFont(font)
         self.date = wx.TextCtrl(self,-1,size=wx.Size(100,25),pos=(30,100),name="date");
+        
+        self.delete = wx.Button(self, -1, "delete", pos=(30, 210))
+        self.delete.SetSize(wx.Size(80,30))
+        self.Bind(wx.EVT_BUTTON, self.de, self.delete)
+        self.delete.SetDefault() 
        
         self.submit = wx.Button(self, -1, "search", pos=(30, 270))
         self.submit.SetSize(wx.Size(80,30))
@@ -637,8 +623,10 @@ class ReecordPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.back, self.bk)
         self.bk.SetDefault()
         
+        
+        
         ReecordPanel.re = wx.grid.Grid(self,pos=(180,70))
-        self.res=Service.MyClass().getRecords()
+        self.res=EmployeeServiceImpl.MyClass().getRecords()
         ReecordPanel.re.SetSize(wx.Size(340,320))
         ReecordPanel.re.CreateGrid(20+self.res.__len__(),4)
         ReecordPanel.re.SetRowLabelSize(0)
@@ -653,15 +641,32 @@ class ReecordPanel(wx.Panel):
             ReecordPanel.re.SetCellValue(row,3,self.res[row][3])
             for col in range(4):
                 ReecordPanel.re.SetReadOnly(row,col,True)
+    def de(self,event):
+        self.time=self.date.GetValue()
+        if self.time=="":
+            pass
+        else:
+            EmployeeServiceImpl.MyClass().deleteRecord(self.time)
+            self.lookres=EmployeeServiceImpl.MyClass().getRecords()
+            ReecordPanel.re.ClearGrid()
+            for row in range(self.lookres.__len__()):
+                ReecordPanel.re.SetCellValue(row,0,self.lookres[row][0])
+                ReecordPanel.re.SetCellValue(row,1,self.lookres[row][1])
+                ReecordPanel.re.SetCellValue(row,2,self.lookres[row][2])
+                ReecordPanel.re.SetCellValue(row,3,self.lookres[row][3])
+            self.date.SetValue("")
     def search(self,event):
         self.time=self.date.GetValue()
-        self.lookres=Service.MyClass().getRecordByTime(self.time)
-        ReecordPanel.re.ClearGrid()
-        for row in range(self.lookres.__len__()):
-            ReecordPanel.re.SetCellValue(row,0,self.lookres[row][0])
-            ReecordPanel.re.SetCellValue(row,1,self.lookres[row][1])
-            ReecordPanel.re.SetCellValue(row,2,self.lookres[row][2])
-            ReecordPanel.re.SetCellValue(row,3,self.lookres[row][3])
+        if self.time=="":
+            pass
+        else:
+            self.lookres=EmployeeServiceImpl.MyClass().getRecordByTime(self.time)
+            ReecordPanel.re.ClearGrid()
+            for row in range(self.lookres.__len__()):
+                ReecordPanel.re.SetCellValue(row,0,self.lookres[row][0])
+                ReecordPanel.re.SetCellValue(row,1,self.lookres[row][1])
+                ReecordPanel.re.SetCellValue(row,2,self.lookres[row][2])
+                ReecordPanel.re.SetCellValue(row,3,self.lookres[row][3])
     def back(self,event):
         self.Destroy()
         MainPanel(frame)
@@ -707,7 +712,7 @@ class ListOfEmplPanel(wx.Panel):
         self.delete.SetDefault()  
         
         ListOfEmplPanel.listofempl = wx.grid.Grid(self,pos=(140,70))
-        self.ems=Service.MyClass().getAllEmpl()
+        self.ems=EmployeeServiceImpl.MyClass().getAllEmpl()
         ListOfEmplPanel.listofempl.CreateGrid(30+self.ems.__len__(),6)
         ListOfEmplPanel.listofempl.SetRowLabelSize(0)
         ListOfEmplPanel.listofempl.SetColLabelValue(0, "Name")
@@ -735,7 +740,7 @@ class ListOfEmplPanel(wx.Panel):
         if self.ju_eid=="":
             pass;
         else:
-            if Service.MyClass().judgeE_id(self.E_ID.GetValue())==False:
+            if EmployeeServiceImpl.MyClass().judgeE_id(self.E_ID.GetValue())==False:
                 New_Employee.msg_eid=wx.StaticText(self, -1,"E_ID is error", size=wx.Size(150,60),pos=(20,20))
     def search(self,event):
         if New_Employee.msg_eid.GetLabel()=="E_ID is error":
@@ -764,11 +769,12 @@ class ListOfEmplPanel(wx.Panel):
                 if self.id=="":
                     pass
                 else:
-                    Service.MyClass().delEmpl(self.id)
+                    EmployeeServiceImpl.MyClass().delEmpl(self.id)
+                    AccountDaoImpl.MyClass().delAccById(self.id)
                     self.repaint()
     def repaint(self):
         ListOfEmplPanel.listofempl.ClearGrid()
-        self.ems=Service.MyClass().getAllEmpl()
+        self.ems=EmployeeServiceImpl.MyClass().getAllEmpl()
         for row in range(self.ems.__len__()):
             ListOfEmplPanel.listofempl.SetCellValue(row, 0,self.ems[row][1]) 
             ListOfEmplPanel.listofempl.SetCellValue(row, 1,self.ems[row][2]) 
@@ -786,7 +792,7 @@ class ChangeDetailPanel(wx.Panel):
     mode=''
     payment=''
     def __init__(self,parent):
-        self.ems=Service.MyClass().getFind(ListOfEmplPanel.E_Name,ListOfEmplPanel.E_ID)
+        self.ems=EmployeeServiceImpl.MyClass().getFind(ListOfEmplPanel.E_Name,ListOfEmplPanel.E_ID)
         wx.Panel.__init__(self, parent)  
         self.SetSize(wx.Size(700,500)) 
         self.ll=wx.StaticText(self, -1,"Detail Change", size=wx.Size(150,40),pos=(270,20))
@@ -854,7 +860,7 @@ class ChangeDetailPanel(wx.Panel):
         if sampleList1[self.mu]=="pickup":
             pass
         else:
-            self.accdao=AccountDao.MyClass()
+            self.accdao=AccountDaoImpl.MyClass()
             self.acc=self.accdao.getAccById(self.ems[0][0])
             self.account=wx.TextCtrl(self,-1,self.acc[0][1],size=wx.Size(150,25),pos=(460,345),name="e_account");
         
@@ -875,7 +881,7 @@ class ChangeDetailPanel(wx.Panel):
         if self.ju_eid=="":
             pass;
         else:
-            if Service.MyClass().judgeE_id(self.ee_id.GetValue()):
+            if EmployeeServiceImpl.MyClass().judgeE_id(self.ee_id.GetValue()):
                 New_Employee.msg_eid=wx.StaticText(self, -1,"E_ID is exist", size=wx.Size(150,60),pos=(450,195))
     def judgeU_ID(self,event):
         New_Employee.msg_uid=wx.StaticText(self, -1,"",size=wx.Size(150,60),pos=(450,245))
@@ -883,7 +889,7 @@ class ChangeDetailPanel(wx.Panel):
         if self.ju_uid=="":
             pass;
         else:
-            if Service.MyClass().judgeU_id(self.uu_id.GetValue()):
+            if EmployeeServiceImpl.MyClass().judgeU_id(self.uu_id.GetValue()):
                 New_Employee.msg_uid=wx.StaticText(self, -1,"U_ID is exist",size=wx.Size(150,60),pos=(450,245))   
     def submit(self,event):
         if self.uu_id.GetValue()=="" or self.uu_id.GetValue()=="null":
@@ -892,7 +898,7 @@ class ChangeDetailPanel(wx.Panel):
             self.uuid=self.uu_id.GetValue()
         self.em=Employee.Myclass(self.ee_id.GetValue(),self.e_name.GetValue(),self.e_address.GetValue(),
                                  ChangeDetailPanel.payment,self.uuid,ChangeDetailPanel.mode,self.ems[0][6],self.ems[0][7],self.ems[0][8])
-        self.emdao=EmployeeDao.MyClass()
+        self.emdao=EmployeeDaoImpl.MyClass()
         self.emdao.delEmpl(self.ems[0][0])
         self.emdao.addEmpl(self.em)
         
@@ -901,7 +907,7 @@ class ChangeDetailPanel(wx.Panel):
         else:
             if self.account.Name=="e_account":
                 self.acc=Account.MyClass(self.ee_id.GetValue(),self.account.GetValue())
-                self.accdao=AccountDao.MyClass()
+                self.accdao=AccountDaoImpl.MyClass()
                 self.accdao.delAccById(self.ee_id.GetValue())
                 self.accdao.addAcc(self.acc)
         
@@ -950,7 +956,7 @@ class UpdateRatePanel(wx.Panel):
         self.backbtn.SetDefault()
         
         UpdateRatePanel.listofrate = wx.grid.Grid(self,pos=(150,70))
-        self.ems=Service.MyClass().getUnionEmpl()
+        self.ems=EmployeeServiceImpl.MyClass().getUnionEmpl()
         UpdateRatePanel.listofrate.CreateGrid(20+self.ems.__len__(),4)
         UpdateRatePanel.listofrate.SetRowLabelSize(0)
         UpdateRatePanel.listofrate.SetSize(wx.Size(340,300))
@@ -973,7 +979,7 @@ class UpdateRatePanel(wx.Panel):
             UpdateRatePanel.listofrate.SetCellValue(row,3,self.ems[row][6]) 
              
     def update(self,event):
-        self.ems=Service.MyClass().getUnionEmpl()
+        self.ems=EmployeeServiceImpl.MyClass().getUnionEmpl()
         for row in range(self.ems.__len__()):
             self.rate=UpdateRatePanel.listofrate.GetCellValue(row,3) 
             if self.rate=="":
@@ -983,14 +989,14 @@ class UpdateRatePanel(wx.Panel):
                     pass
                 else:
                     self.u_id=UpdateRatePanel.listofrate.GetCellValue(row,1)
-                    self.ems=Service.MyClass().changeUnionRate(self.u_id, self.rate)
+                    self.ems=EmployeeServiceImpl.MyClass().changeUnionRate(self.u_id, self.rate)
                     self.repaint()
     def back(self,event):
         self.Destroy()
         MainPanel(frame)
         frame.Refresh()
     def repaint(self):
-        self.ems=Service.MyClass().getUnionEmpl()
+        self.ems=EmployeeServiceImpl.MyClass().getUnionEmpl()
         for row in range(self.ems.__len__()):
             UpdateRatePanel.listofrate.SetCellValue(row,0,self.ems[row][1])
             if self.ems[row][4]=="0":

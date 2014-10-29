@@ -1,15 +1,17 @@
 # encoding:utf-8
 import mysql.connector
+
+
 class MyClass(object):
-
+#   初始化连接数据库
     def __init__(self):
-        self.conn = mysql.connector.connect(host='50.87.115.118', user='cptwozer_remote', password='8BHdwDYu', database='cptwozer_payroll', port=3306, use_unicode=True)
+        self.conn = mysql.connector.connect(host='localhost', user='root', password='123', database='payroll', port=3306, use_unicode=True)
         self.cur = self.conn.cursor()
-
+#   关闭数据库连�?
     def close(self):
         self.conn.close()
         self.cur.close()
-
+#   执行数据库insert操作，传入的table为table名，dict为一个包含了数据库列名对应�?的dictionary类型
     def insert(self, table, dict):
         for i in dict:
             if dict[i] != None:
@@ -27,7 +29,7 @@ class MyClass(object):
         else:
             self.close()
             return False
-
+#   执行数据库update操作，dict是传进来的dictionary,judge为sql语句中where后的条件的列�?
     def update(self, table, dict, judge):
         value = dict[judge]
         dict.pop(judge)
@@ -49,7 +51,7 @@ class MyClass(object):
         else:
             self.close()
             return False
-
+#   执行数据库查询操�?data是sql语句中where后面的条件判断语句，返回的l是一个二维list
     def get(self, table, data):
         sql = "select *from " + table + " " + data
         self.cur.execute(sql)
@@ -65,7 +67,7 @@ class MyClass(object):
             l.append(t)
         self.close()
         return l
-
+#   执行数据库删除操�?data是sql语句中where后面的条件判断语�?
     def delete(self, table, data):
         sql = "delete from " + table + " " + data
         self.cur.execute(sql)
@@ -76,7 +78,4 @@ class MyClass(object):
         else:
             self.close()
             return False
-        
-
-
         
